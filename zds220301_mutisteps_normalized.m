@@ -1,7 +1,7 @@
 clear all
 clc
 
-%%%%%%https://www.zhihu.com/column/control-system ²ÉÓÃplaceº¯Êı
+
 %FIR fs 16HZ lowpass Fpass = 1Hz  Fstop = 2Hz in 1hz_pass_stop.fcf
 %FIR fs 16hz lowpass in 40dbdecay.fcf
 h=[0.0005213980539685646                
@@ -52,14 +52,14 @@ y = y';
 powy=sum(y.^2)/length(y)/Fs
 
 %Noise Generator filtermethod
-fs=16;           %ÔëÉù²ÉÑùÆµÂÊhz
-T_N=iteration_time/fs;%×ÜÊ±¼äs
-t=1/fs:1/fs:T_N;  %Ê±¼äÏòÁ¿
-L=iteration_time;  %Ñù±¾ÊıÁ¿=iteration number
-sigmaw=powy;          %ÔëÉù¹¦ÂÊ,µ¥Î»Îªdbw
+fs=16;           %å™ªå£°é‡‡æ ·é¢‘ç‡hz
+T_N=iteration_time/fs;%æ€»æ—¶é—´s
+t=1/fs:1/fs:T_N;  %æ—¶é—´å‘é‡
+L=iteration_time;  %æ ·æœ¬æ•°é‡=iteration number
+sigmaw=powy;          %å™ªå£°åŠŸç‡,å•ä½ä¸ºdbw
 z=wgn(L,1,sigmaw);
-[b,a]=butter(8,[0.1/(fs/2),2/(fs/2) ]);%»ñµÃ8½×°ÍÌØÎÖË¹ÂË²¨Æ÷ÏµÊı£¬100-200Hz
-freqs(b,a)            %»­ÂË²¨Æ÷ÌØĞÔÇúÏß
+[b,a]=butter(8,[0.1/(fs/2),2/(fs/2) ]);%è·å¾—8é˜¶å·´ç‰¹æ²ƒæ–¯æ»¤æ³¢å™¨ç³»æ•°ï¼Œ100-200Hz
+freqs(b,a)            %ç”»æ»¤æ³¢å™¨ç‰¹æ€§æ›²çº¿
 w=filter(b,a,z);
 
 poww=sum(w.^2)/length(w)/Fs
@@ -69,7 +69,7 @@ sigmae=2*sigmaw;
 [A,B,C,D]=tf2ss(h',ones(1,len));
 K=acker(A,B,zeros(1,len-1));
 
-%²Î¿¼º¯Êı
+%å‚è€ƒå‡½æ•°
 % sys = ss(A-B*K,B,C,D,1/Fs);
 % [y,t,x] = lsim(sys,u,t);
 
@@ -79,7 +79,7 @@ for iii=2:iteration_time
     y_cup(iii-1)=C*x(:,iii-1);%+D*e(iii-1);
     x(:,iii)=(A-B*K)*x(:,iii-1)+B*e(iii-1);
     e(iii)=1*D*( y(iii) +w(iii) - C*x(:,iii) )/(sigmaw^2+sigmae^2);   
-%%%%%×´Ì¬·½³ÌÔõÃ´Ğ´²»»áÓĞ´óÇø±ğ
+
 %     x(:,iii)=A*x(:,iii-1)+B*e(iii-1);
 %     e(iii)=D*(y(iii)+w(iii)-C*x(:,iii-1))/(sigmaw^2+sigmae^2);
 %     y_cup(iii)=C*x(:,iii-1)+D*e(iii-1); 
@@ -108,63 +108,56 @@ plot(Iyy);title('mutual information');
  
 figure(1)
 Y1= fft(y);
-%¼ÆËãË«²àÆµÆ×P2
+%è®¡ç®—åŒä¾§é¢‘è°±P2
 P1_2 = abs(Y1/NumSig);
-%È¡³öÇ°ÃæÒ»°ë½øĞĞ·ÖÎö
+%å–å‡ºå‰é¢ä¸€åŠè¿›è¡Œåˆ†æ
 P1_1 = P1_2(1:NumSig/2+1);
-%×îÖÕ×ª»¯Îªµ¥²à·ùÆµ
+%æœ€ç»ˆè½¬åŒ–ä¸ºå•ä¾§å¹…é¢‘
 P1_1(2:end-1) = 2*P1_1(2:end-1);
 subplot(4,2,1);f = Fs*(0:(NumSig/2))/NumSig;
-plot(f,P1_1);title('yµÄFFT·ÖÎö');
+plot(f,P1_1);title('yçš„FFTåˆ†æ');
 subplot(4,2,2);
-plot(y);title('yµÄÊ±ÓòĞòÁĞ');
+plot(y);title('yçš„æ—¶åŸŸåºåˆ—');
 
 
 Y_cup=fft(y_cup);
 ycupP1_2 = abs(Y_cup/NumSig);
-%È¡³öÇ°ÃæÒ»°ë½øĞĞ·ÖÎö
+%å–å‡ºå‰é¢ä¸€åŠè¿›è¡Œåˆ†æ
 ycupP1_1 = ycupP1_2(1:NumSig/2+1);
-%×îÖÕ×ª»¯Îªµ¥²à·ùÆµ
+%æœ€ç»ˆè½¬åŒ–ä¸ºå•ä¾§å¹…é¢‘
 ycupP1_1(2:end-1) = 2*ycupP1_1(2:end-1);
 subplot(4,2,3);f = Fs*(0:(NumSig/2))/NumSig;
-plot(f,ycupP1_1);title('ycupµÄFFT·ÖÎö');
+plot(f,ycupP1_1);title('ycupçš„FFTåˆ†æ');
 subplot(4,2,4);
-plot(y_cup);title('Êµ¼ÊÊä³öycupµÄÊ±ÓòĞòÁĞ');
+plot(y_cup);title('å®é™…è¾“å‡ºycupçš„æ—¶åŸŸåºåˆ—');
 
 
 E=fft(e);
 eP1_2 = abs(E/NumSig);
-%È¡³öÇ°ÃæÒ»°ë½øĞĞ·ÖÎö
+%å–å‡ºå‰é¢ä¸€åŠè¿›è¡Œåˆ†æ
 eP1_1 = eP1_2(1:NumSig/2+1);
-%×îÖÕ×ª»¯Îªµ¥²à·ùÆµ
+%æœ€ç»ˆè½¬åŒ–ä¸ºå•ä¾§å¹…é¢‘
 eP1_1(2:end-1) = 2*eP1_1(2:end-1);
 subplot(4,2,5);f = Fs*(0:(NumSig/2))/NumSig;
-plot(f,eP1_1);title('eµÄFFT·ÖÎö');
+plot(f,eP1_1);title('eçš„FFTåˆ†æ');
 subplot(4,2,6);
-plot(e);title('eµÄÊ±ÓòĞòÁĞ');
+plot(e);title('eçš„æ—¶åŸŸåºåˆ—');
 
 
-fftw=fft(w);%¸µÀïÒ¶±ä»»
-P = abs(fftw/NumSig);%È¡·ùÆµÌØĞÔ£¬³ıÒÔL
-P = P(1:NumSig/2+1);%½ØÈ¡Ç°°ë¶Î
-P(2:end-1)=2*P(2:end-1);%µ¥²àÆµÆ×·ÇÖ±Á÷·ÖÁ¿¼ÇµÃ³ËÒÔ2
+fftw=fft(w);%å‚…é‡Œå¶å˜æ¢
+P = abs(fftw/NumSig);%å–å¹…é¢‘ç‰¹æ€§ï¼Œé™¤ä»¥L
+P = P(1:NumSig/2+1);%æˆªå–å‰åŠæ®µ
+P(2:end-1)=2*P(2:end-1);%å•ä¾§é¢‘è°±éç›´æµåˆ†é‡è®°å¾—ä¹˜ä»¥2
 subplot(4,2,8)
 plot(w)
 subplot(4,2,7)
 plot(f,P)
-title('Õ­´ø¸ßË¹ÔëÉù£¨ÆµÓò£©')
+title('çª„å¸¦é«˜æ–¯å™ªå£°ï¼ˆé¢‘åŸŸï¼‰')
 
 % figure(2)
-% subplot(2,2,1);plot(SquDis);title('yÓëycup Ê±Ğò Æ½·½²î');
-% subplot(2,2,2);plot(SquDisye);title('yÓëe Ê±Ğò Æ½·½²î');
-% subplot(2,2,3);plot(SquDise);title('ycupÓëe Ê±Ğò Æ½·½²î');
-
-% figure(3)
-% waterfall(x);
-% 
-% figure(5);
-% formulation=((C*x+w)*(sigmaw^2/sigmae^2+D^2)-D^2*C*x);
-% plot(formulation);
+% subplot(2,2,1);plot(SquDis);title('yä¸ycup æ—¶åº å¹³æ–¹å·®');
+% subplot(2,2,2);plot(SquDisye);title('yä¸e æ—¶åº å¹³æ–¹å·®');
+% subplot(2,2,3);plot(SquDise);title('ycupä¸e æ—¶åº å¹³æ–¹å·®');
 
 
 
